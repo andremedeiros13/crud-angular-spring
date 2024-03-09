@@ -10,38 +10,42 @@ import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { ErrorDialogComponent } from '../../shared/components/error-dialog/error-dialog.component';
-import { CategoryPipe } from "../../shared/pipes/category.pipe";
-import {MatIconModule} from '@angular/material/icon';
-
+import { CategoryPipe } from '../../shared/pipes/category.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute, Router } from '@angular/router';
+import {MatButtonModule} from '@angular/material/button';
 @Component({
-    selector: 'app-courses',
-    standalone: true,
-    providers: [CoursesService],
-    templateUrl: './courses.component.html',
-    styleUrl: './courses.component.scss',
-    imports: [
-        CommonModule,
-        MatTableModule,
-        MatCardModule,
-        MatToolbarModule,
-        HttpClientModule,
-        MatProgressSpinnerModule,
-        ErrorDialogComponent,
-        CategoryPipe,
-        MatIconModule
-    ]
+  selector: 'app-courses',
+  standalone: true,
+  providers: [CoursesService],
+  templateUrl: './courses.component.html',
+  styleUrl: './courses.component.scss',
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatCardModule,
+    MatToolbarModule,
+    HttpClientModule,
+    MatProgressSpinnerModule,
+    ErrorDialogComponent,
+    CategoryPipe,
+    MatIconModule,
+    MatButtonModule
+  ],
 })
 export class CoursesComponent {
   courses$: Observable<Course[]>;
-  displayedColumns = ['name', 'category'];
+  displayedColumns = ['name', 'category', 'actions'];
 
   constructor(
     private cousersService: CoursesService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private router: Router,
+    private activateRoute: ActivatedRoute
   ) {
     this.courses$ = this.cousersService.list().pipe(
       catchError((err) => {
-        this.onError('Erro ao carregar os cursos.')
+        this.onError('Erro ao carregar os cursos.');
         return of([]);
       })
     );
@@ -53,5 +57,9 @@ export class CoursesComponent {
     this.dialog.open(ErrorDialogComponent, {
       data: errorMsg,
     });
+  }
+
+  onAdd() {
+    this.router.navigate(['new'], { relativeTo: this.activateRoute });
   }
 }
